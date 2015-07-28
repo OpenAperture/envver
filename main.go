@@ -20,8 +20,8 @@ type Arguments struct {
 func main() {
   app := cli.NewApp()
   app.Name = "Envver"
-  app.Usage = "Retrieve product environment settings from OpenAperture and echoes them to the console (stage command), or places them in /etc/container_environment (build command)."
-  app.Version = "0.0.1"
+  app.Usage = "Retrieve product environment settings from OpenAperture and echoes them to the console ."
+  app.Version = "0.0.2"
   app.Flags = []cli.Flag{
     cli.StringFlag{
       Name:   "id, i",
@@ -43,9 +43,6 @@ func main() {
       Usage:  "Base URL of the OpenAperture Manager service.",
       EnvVar: "OA_URL",
     },
-  }
-
-  commandFlags := []cli.Flag{
     cli.StringFlag{
       Name:   "product, p",
       Usage:  "The OpenAperture Product Name of the product for which you're retrieving environment settings.",
@@ -57,42 +54,17 @@ func main() {
       EnvVar: "OA_PRODUCT_ENVIRONMENT_NAME",
     },
   }
-  app.Commands = []cli.Command{
-    {
-      Name:        "build",
-      Aliases:     []string{"b"},
-      Usage:       "Update /etc/container_environment with the Product Environment settings.",
-      Description: "Retrieves the list of Product Environment settings from OpenAperture, and writes the settings to the file system.",
-      Flags:       commandFlags,
-      Action:      func(c *cli.Context) {
-        args := getArguments(c)
-        if validateArguments(args) != true {
-          cli.ShowCommandHelp(c, "build")
-          return
-        }
+  app.Action = func(c *cli.Context) {
+    args := getArguments(c)
+    if validateArguments(args) != true {
+      cli.ShowAppHelp(c)
+      return
+    }
 
-        fetchVariables(args, "build")
-      },
-    },
-    {
-      Name:        "stage",
-      Aliases:     []string{"s"},
-      Usage:       "Echo the Product Environment's settings to the console.",
-      Description: "Retrieves the list of Product Environment settings from OpenAperture, but instead of writing them to the file system, echoes them to the console.",
-      Flags:       commandFlags,
-      Action:      func(c *cli.Context) {
-        args := getArguments(c)
-        if validateArguments(args) != true {
-          cli.ShowCommandHelp(c, "stage")
-          return
-        }
-
-        fetchVariables(args, "stage")
-      },
-    },
+    fetchVariables(args)
   }
 
-  app.Run(os.Args)
+  app.RunAndExitOnError()//os.Args)
 }
 
 func getArguments(c *cli.Context) (*Arguments) {
@@ -139,7 +111,7 @@ func validateArguments(a *Arguments) (bool) {
   return true
 }
 
-func fetchVariables(args *Arguments, output string) {
+func fetchVariables(args *Arguments) {
   var variables []environment.EnvironmentVariable
 
   credentials := auth.ClientCredentials{
@@ -150,8 +122,8 @@ func fetchVariables(args *Arguments, output string) {
   authResponse, err := auth.GetAuthToken(credentials, args.TokenUrl)
 
   if err != nil {
-    fmt.Println("Couldn't retrieve auth token.\n", err)
-    return
+    fmt.Printf("Couldn't retrieve auth token: %v\n", err)
+    os.Exit(1)
   }
 
   if len(args.EnvironmentName) > 0 {
@@ -161,13 +133,11 @@ func fetchVariables(args *Arguments, output string) {
   }
 
   if err != nil {
-    fmt.Println("Error retrieving variables")
-    return
+    fmt.Printf("Error retrieving variables: %v\n", err)
+    os.Exit(1)
   }
 
-  if output == "stage" {
-    for _, v := range variables {
-      fmt.Printf("%s=%s\n", v.Name, v.Value)
-    }
+  for _, v := range variables {
+    fmt.Printf("%s=%s\n", v.Name, v.Value)
   }
 }
