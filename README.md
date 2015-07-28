@@ -1,5 +1,7 @@
 Envver
 ======
+[![Build Status](https://semaphoreci.com/api/v1/projects/5bea24be-d4c8-4236-9505-cda2299e66fc/495981/badge.svg)](https://semaphoreci.com/perceptive/envver)      
+
 
 Retrieve Product Environment configuration from OpenAperture.
 
