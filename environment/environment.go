@@ -6,6 +6,7 @@ import (
   "net/http"
   "io/ioutil"
   "net/url"
+  "os"
 )
 
 type EnvironmentVariable struct {
@@ -64,6 +65,16 @@ func makeRequest(url string, authToken string) ([]EnvironmentVariable, error) {
 
   if err != nil {
     return nil, err
+  }
+
+  if resp.StatusCode == 401 || resp.StatusCode == 403 {
+    fmt.Printf("Auth token refused. Status: %v\n", resp.StatusCode)
+    os.Exit(4)
+  }
+
+  if resp.StatusCode == 404 {
+    fmt.Printf("Product or environment not found\n")
+    os.Exit(8)
   }
 
   defer resp.Body.Close()

@@ -58,7 +58,7 @@ func main() {
     args := getArguments(c)
     if validateArguments(args) != true {
       cli.ShowAppHelp(c)
-      return
+      os.Exit(1)
     }
 
     fetchVariables(args)
@@ -123,7 +123,7 @@ func fetchVariables(args *Arguments) {
 
   if err != nil {
     fmt.Printf("Couldn't retrieve auth token: %v\n", err)
-    os.Exit(1)
+    os.Exit(2)
   }
 
   if len(args.EnvironmentName) > 0 {
@@ -134,7 +134,7 @@ func fetchVariables(args *Arguments) {
 
   if err != nil {
     fmt.Printf("Error retrieving variables: %v\n", err)
-    os.Exit(1)
+    os.Exit(16)
   }
 
   for _, v := range variables {

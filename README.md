@@ -15,3 +15,10 @@ Retrieve Product Environment configuration from OpenAperture.
   * OA_PRODUCT_NAME
   * OA_PRODUCT_ENVIRONMENT_NAME
 * Run `./envver help` for more details.
+
+* Exit codes:
+  * 1 - Missing required option or environment variable.
+  * 2 - Could not retrieve OAuth token from the Auth Token URL.
+  * 4 - The OAuth token used was rejected. Make sure your client credentials can access the specified project.
+  * 8 - The specified project or environment could not be found.
+  * 16 - Some other error occurred.
