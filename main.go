@@ -1,8 +1,8 @@
 package main
 
 import (
-  "github.com/jordan0day/envver/auth"
-  "github.com/jordan0day/envver/environment"
+  "github.com/openaperture/envver/auth"
+  "github.com/openaperture/envver/environment"
   "fmt"
   "os"
   "github.com/codegangsta/cli"
@@ -21,7 +21,7 @@ func main() {
   app := cli.NewApp()
   app.Name = "Envver"
   app.Usage = "Retrieve product environment settings from OpenAperture and echoes them to the console ."
-  app.Version = "0.0.2"
+  app.Version = "0.0.3"
   app.Flags = []cli.Flag{
     cli.StringFlag{
       Name:   "id, i",
@@ -64,7 +64,7 @@ func main() {
     fetchVariables(args)
   }
 
-  app.RunAndExitOnError()//os.Args)
+  app.RunAndExitOnError()
 }
 
 func getArguments(c *cli.Context) (*Arguments) {
